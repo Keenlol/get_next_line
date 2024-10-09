@@ -25,6 +25,16 @@ typedef struct s_list
 
 ////////////////////////
 
+int	ft_strlen(const char *str)
+{
+	int	count;
+
+	count = 0;
+	while (*(str++))
+		count++;
+	return (count);
+}
+
 t_list	*ft_lst_get_last(t_list *stash)
 {
 	t_list	*current;
@@ -38,14 +48,14 @@ t_list	*ft_lst_get_last(t_list *stash)
 
 int	found_newline(t_list *stash)
 {
-	size_t	i;
+	int		i;
 	t_list	*current;
 
 	if (stash == NULL)
 		return (0);
-	i = 0;
 	current = ft_lst_get_last(stash);
-	while (current -> content[i])
+	i = 0;
+	while (current->content[i])
 	{
 		if (current->content[i] == '\n')
 			return (1);
@@ -54,9 +64,9 @@ int	found_newline(t_list *stash)
 	return (0);
 }
 
-void	add_to_stash(t_list **stash, char *buff, int read_cursor)
+void	add_to_stash(t_list **stash, char *buff, int readed)
 {
-	size_t	i;
+	int		i;
 	t_list	*last;
 	t_list	*new_node;
 
@@ -64,11 +74,11 @@ void	add_to_stash(t_list **stash, char *buff, int read_cursor)
 	if (new_node == NULL)
 		return ;
 	new_node->next = NULL;
-	new_node->content = malloc(sizeof(char) * (read_cursor + 1));
+	new_node->content = malloc(sizeof(char) * (readed + 1));
 	if (new_node->content == NULL)
 		return ;
 	i = 0;
-	while (buff[i] && i < read_cursor)
+	while (buff[i] && i < readed)
 	{
 		new_node->content[i] = buff[i];
 		i++;
@@ -85,8 +95,8 @@ void	add_to_stash(t_list **stash, char *buff, int read_cursor)
 
 void	generate_line(char **line, t_list *stash)
 {
-	size_t 	i;
-	size_t	len;
+	int 	i;
+	int		len;
 
 	len = 0;
 	while (stash)
@@ -111,10 +121,54 @@ void	generate_line(char **line, t_list *stash)
 
 /////////////////////
 
+void	free_stash(t_list *stash)
+{
+	t_list	*current;
+	t_list	*next;
+
+	current = stash;
+	while (current)
+	{
+		free(current->content);
+		next = current->next;
+		free(current->next);
+		free(current);
+		current = next;
+	}
+}
+
+void	clean_stash(t_list **stash)
+{
+	t_list	*last;
+	t_list	*clean_node;
+	int		i;
+	int		j;
+
+	clean_node = malloc(sizeof(t_list));
+	if (!stash || !clean_node)
+		return ;
+	clean_node->next = NULL;
+	last = ft_lst_get_last(*stash);
+	i = 0;
+	while (last->content[i] && last->content[i] != '\n')
+		i++;
+	if (last->content && last->content[i] == '\n')
+		i++;
+	clean_node->content = malloc(sizeof(char) * (ft_strlen(last->content) - i) + 1);
+	if (!(clean_node->content))
+		return ;
+	j = 0;
+	while (last->content[i])
+		clean_node->content[j++] = last->content[i++];
+	clean_node->content[j] = '\0';
+	free_stash(*stash);
+	*stash = clean_node;
+}
+
 void	extract_line(t_list *stash, char **line)
 {
-	size_t	i;
-	size_t	j;
+	int	i;
+	int	j;
 
 	if (!stash)
 		return ;
@@ -139,23 +193,25 @@ void	extract_line(t_list *stash, char **line)
 	(*line)[j] = '\0';
 }
 
-void	read_and_stash(int fd, t_list **stash, int *read_cursor)
+void	read_and_stash(int fd, t_list **stash)
 {
 	char	*buff;
+	int		readed;
 
-	while (!found_newline(*stash) && *read_cursor != 0)
+	readed = 1;
+	while (!found_newline(*stash) && readed != 0)
 	{
 		buff = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 		if (!buff)
-			return (NULL);		
-		*read_cursor = read(fd, buff, BUFFER_SIZE);
-		if ((*stash == NULL && *read_cursor == 0) || *read_cursor == -1)
+			return ;
+		readed = (int)read(fd, buff, BUFFER_SIZE);
+		if ((*stash == NULL && readed == 0) || readed == -1)
 		{
 			free(buff);
 			return ;
 		}
-		buff[*read_cursor] = '\0';
-		add_to_stash(stash, buff, *read_cursor);
+		buff[readed] = '\0';
+		add_to_stash(stash, buff, readed);
 		free(buff);
 	}
 }
@@ -164,18 +220,25 @@ char	*get_next_line(int fd)
 {
 	static t_list	*stash = NULL;
 	char			*line;
-	int				read_cursor;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	read_cursor = 1;
 	line = NULL;
 
-	read_and_stash(fd, &stash, &read_cursor);
+	read_and_stash(fd, &stash);
 	if (stash == NULL)
 		return (NULL);
 	
 	extract_line(stash, &line);
+
+	clean_stash(&stash);
+	if (line[0] == '\0')
+	{
+		free_stash(stash);
+		stash = NULL;
+		free(line);
+		return (NULL);
+	}
 	return (line);
 }
 
@@ -189,7 +252,13 @@ int main(void)
 	int		fd;
 	char	*thing;
 
-	fd = open("test.txt", O_RDONLY);
+	fd = open("test", O_RDONLY);
+	if (fd == -1)
+	{
+		printf("error opening the file\n");
+		return (0);
+	}
+	printf("read sucess!\n");
 	while (1)
 	{
 		thing = get_next_line(fd);
