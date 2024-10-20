@@ -9,13 +9,13 @@ int main(void)
 	char	*thing;
     int     line_no;
 
-	fd = open("test", O_RDONLY);
+	fd = open("test.txt", O_RDONLY);
 	if (fd == -1)
 	{
 		printf("error opening the file\n");
 		return (0);
 	}
-	printf("read sucess!\n");
+	printf("read sucess! buffer=%d\n",BUFFER_SIZE);
     line_no = 1;
 	while (1)
 	{
