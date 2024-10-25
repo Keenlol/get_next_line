@@ -6,7 +6,7 @@
 /*   By: chetphisuthgmail.com <chetphisuthgmail.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/20 17:28:17 by ctongpa           #+#    #+#             */
-/*   Updated: 2024/10/21 21:02:07 by chetphisuth      ###   ########.fr       */
+/*   Updated: 2024/10/25 22:36:57 by chetphisuth      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 # ifndef MAX_FD
 #  define MAX_FD 1024
 # endif
-
 
 # include <stdlib.h>
 # include <unistd.h>

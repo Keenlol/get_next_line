@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ctongpa <ctongpa@student.42.fr>            +#+  +:+       +#+        */
+/*   By: chetphisuthgmail.com <chetphisuthgmail.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/20 17:28:31 by ctongpa           #+#    #+#             */
-/*   Updated: 2024/10/20 17:34:01 by ctongpa          ###   ########.fr       */
+/*   Updated: 2024/10/26 01:01:52 by chetphisuth      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,20 +30,17 @@ int	read_file(t_gnl *gnl)
 		if (!gnl->head)
 			return (0);
 		gnl->last = gnl->head;
-		gnl->last->len = 0;
-		gnl->last->next = NULL;
 	}
 	else if (!gnl->eof)
 	{
 		gnl->last->next = (t_link *)malloc(sizeof(t_link));
 		if (!gnl->last->next)
-			return (!free_all(gnl));
+			return (free_all(gnl));
 		gnl->last = gnl->last->next;
-		gnl->last->len = 0;
-		gnl->last->next = NULL;
 	}
 	else
 		return (1);
+	gnl->last->next = NULL;
 	gnl->last->len = read(gnl->fd, gnl->last->content, BUFFER_SIZE);
 	if (gnl->last->len <= 0)
 		gnl->eof = 1;
@@ -60,7 +57,7 @@ int	read_next_line(t_gnl *gnl)
 	if (gnl->last->len == -1)
 		return (1);
 	tmp = gnl->head;
-	while (tmp->len)
+	while (!gnl->eof)
 	{
 		i = (gnl->len + gnl->offset) % BUFFER_SIZE;
 		if (i > tmp->len - 1)
@@ -116,6 +113,6 @@ int	free_all(t_gnl *gnl)
 		free(gnl->head);
 		gnl->head = tmp;
 	}
-	start_gnl(gnl, 0);
-	return (1);
+	start_gnl(gnl, gnl->fd);
+	return (0);
 }
