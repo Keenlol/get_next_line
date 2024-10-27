@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_bonus.h                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chetphisuthgmail.com <chetphisuthgmail.    +#+  +:+       +#+        */
+/*   By: ctongpa <ctongpa@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/20 17:28:17 by ctongpa           #+#    #+#             */
-/*   Updated: 2024/10/25 22:36:57 by chetphisuth      ###   ########.fr       */
+/*   Updated: 2024/10/27 14:11:24 by ctongpa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

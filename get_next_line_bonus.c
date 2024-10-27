@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chetphisuthgmail.com <chetphisuthgmail.    +#+  +:+       +#+        */
+/*   By: ctongpa <ctongpa@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/20 17:28:26 by ctongpa           #+#    #+#             */
-/*   Updated: 2024/10/21 21:03:11 by chetphisuth      ###   ########.fr       */
+/*   Updated: 2024/10/27 14:22:26 by ctongpa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ char	*get_next_line(int fd)
 	static t_gnl	gnl[MAX_FD];
 	char			*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || fd > MAX_FD || BUFFER_SIZE <= 0)
 		return (NULL);
 	if (!gnl[fd].head)
 		start_gnl(&gnl[fd], fd);

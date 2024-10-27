@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chetphisuthgmail.com <chetphisuthgmail.    +#+  +:+       +#+        */
+/*   By: ctongpa <ctongpa@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/20 17:28:31 by ctongpa           #+#    #+#             */
-/*   Updated: 2024/10/26 01:01:52 by chetphisuth      ###   ########.fr       */
+/*   Updated: 2024/10/27 14:52:45 by ctongpa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int	read_next_line(t_gnl *gnl)
 	if (gnl->last->len == -1)
 		return (1);
 	tmp = gnl->head;
-	while (!gnl->eof)
+	while (1)
 	{
 		i = (gnl->len + gnl->offset) % BUFFER_SIZE;
 		if (i > tmp->len - 1)
